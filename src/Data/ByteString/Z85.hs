@@ -10,16 +10,16 @@ import Data.Text (Text)
 
 
 data EncodeError
-  = BSNotMod4
+  = BSMod4
 
 
 encode :: ByteString -> Either EncodeError Text
-encode _ = Left BSNotMod4
+encode _ = Left BSMod4
 
 
 data DecodeError
-  = TestNotMod5
+  = TestMod5
 
 
 decode :: Text -> Either DecodeError ByteString
-decode _ = Left TestNotMod5
+decode _ = Left TestMod5

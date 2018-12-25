@@ -4,15 +4,14 @@
 
 module Data.ByteString.Z85 where
 
-import Data.ByteString.Z85.Internal (Z85Char, decodeWord, encodeWord)
-import Data.ByteString (ByteString)
-import qualified Data.ByteString as BS
+import qualified Pipes.Z85.Codec as PZ
+import qualified Pipes.ByteString as PB
 
-import Data.Text (Text)
-import qualified Data.Text as T
-import Data.Vector (Vector)
-import qualified Data.Vector as V
-import qualified Data.Vector.Sized as Vn
+import Data.ByteString.Lazy (ByteString)
+import qualified Data.ByteString.Lazy as LBS
+
+import Data.Text.Lazy (Text)
+import qualified Data.Text.Lazy as LT
 
 
 data EncodeError
@@ -22,7 +21,7 @@ data EncodeError
 encode :: ByteString -> Either EncodeError Text
 encode bs
   | BS.length bs `mod` 4 /= 0 = Left BSMod4
-  | otherwise = Left BSMod4
+  | otherwise = Right (runEffect (PB.fromLazy bs >~ PZ.decode))
 
 
 data DecodeError

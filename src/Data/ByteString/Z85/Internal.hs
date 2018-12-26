@@ -20,14 +20,24 @@ import Control.Monad.ST (runST)
 type Base85 = Word32
 
 
-type Z85Char = Char
+newtype Z85Char = Z85Char
+  { getZ85Char :: Char
+  } deriving (Eq, Ord, Show, Generic)
+
+instance Arbitrary Z85Char where
+  arbitrary = oneof (V.toList z85Chars)
 
 
 type Z85Chunk = Vector 5 Z85Char
 
 
+printZ85Chunk :: Z85Chunk -> Text
+printZ85Chunk = T.pack . map getZ85Char . V.toList
+
+
+
 z85Chars :: Vector 85 Char
-z85Chars = fromJust (V.fromList "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#")
+z85Chars = Z85Char <$> fromJust (V.fromList "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#")
 
 
 lookupZ85Char :: Base85 -> Z85Char

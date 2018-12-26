@@ -28,25 +28,26 @@ import Control.Monad.Base (MonadBase (liftBase))
 
 
 
-encode :: MonadBase ST m => STRef ByteString -> Pipe ByteString Text m ()
-encode leftoverRef =
-  prev <- liftBase (readSTRef leftoverRef)
-  cs <- await
-  let (cs',leftover) =
+-- encode :: MonadBase ST m => STRef ByteString -> Pipe ByteString Text m ()
+-- encode leftoverRef =
+--   prev <- liftBase (readSTRef leftoverRef)
+--   cs <- await
+--   let (cs',leftover) =
   
 
-decode :: MonadBase ST m => STRef Text -> Pipe Text ByteString m ()
-decode leftoverRef =
-  prev <- liftBase (readSTRef leftoverRef)
-  cs <- await
-  let (cs',leftover) =
-        let go :: Text -> (Vector Word32, Text)
-            go x
-              | T.length x < 5 = ([], x)
-              | otherwise =
-                let (pre,suf) = T.splitAt 5 x
-                    (cs'',l) = go suf
-                in  ((decodeWord $ Vs.fromList $ T.unpack pre) `V.cons` cs'',l)
-        in  go (prev <> cs)
-  liftBase (writeSTRef leftoverRef leftover)
-  yield $ LBS.toStrict $ BSB.toLazyByteString $ V.foldMap BSB.word32LE cs'
+-- decode :: MonadBase ST m => STRef Text -> Pipe Text ByteString m ()
+-- decode leftoverRef =
+--   prev <- liftBase (readSTRef leftoverRef)
+--   cs <- await
+--   let (cs',leftover) =
+--         let go :: Text -> (Vector Word32, Text)
+--             go x
+--               | T.length x < 5 = ([], x)
+--               | otherwise =
+--                 let (pre,suf) = T.splitAt 5 x
+--                     (cs'',l) = go suf
+--                 in  ((decodeWord $ Vs.fromList $ T.unpack pre) `V.cons` cs'',l)
+--         in  go (prev <> cs)
+--   liftBase (writeSTRef leftoverRef leftover)
+--   yield $ LBS.toStrict $ BSB.toLazyByteString $ V.foldMap BSB.word32LE cs'
+-- harry potter

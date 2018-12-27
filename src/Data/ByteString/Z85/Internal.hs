@@ -7,7 +7,7 @@ module Data.ByteString.Z85.Internal where
 
 import Data.Vector.Sized (Vector)
 import qualified Data.Vector.Sized as V
-import Data.Char (ord)
+import Data.Char (ord, isAlphaNum)
 import Data.Text (Text, pack)
 import Data.Maybe (fromJust)
 import Data.Bits ((.&.), shiftR)
@@ -43,6 +43,11 @@ printZ85Chunk = pack . map getZ85Char . V.toList
 
 z85Chars :: Vector 85 Z85Char
 z85Chars = Z85Char <$> fromJust (V.fromList "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#")
+
+
+isZ85Char :: Char -> Bool
+isZ85Char c = isAlphaNum c || c `elem` ".-:+=^!/*?&<>()[]{}@%$#"
+
 
 
 lookupZ85Char :: Base85 -> Z85Char

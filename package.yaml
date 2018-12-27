@@ -44,4 +44,5 @@ tests:
     - z85-bytestring
     - QuickCheck
     - tasty
+    - tasty-hunit
     - tasty-quickcheck

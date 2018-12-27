@@ -7,7 +7,7 @@ import Data.Word (Word32)
 import Data.Foldable (fold)
 import Data.ByteString (ByteString)
 import Data.ByteString.Lazy (toStrict)
-import Data.ByteString.Builder (word32LE, toLazyByteString)
+import Data.ByteString.Builder (word32BE, toLazyByteString)
 import Data.Attoparsec.Text (Parser, char, satisfy, inClass)
 import Control.Applicative (many)
 import Control.Monad (replicateM)
@@ -32,4 +32,4 @@ anyZ85ChunkDecoded = decodeWord <$> anyZ85Chunk
 
 
 z85Decoded :: Parser ByteString
-z85Decoded = (toStrict . toLazyByteString . fold) <$> many (word32LE <$> anyZ85ChunkDecoded)
+z85Decoded = (toStrict . toLazyByteString . fold) <$> many (word32BE <$> anyZ85ChunkDecoded)

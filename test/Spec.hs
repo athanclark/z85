@@ -33,7 +33,7 @@ main = defaultMain $ testGroup "All Tests"
   , testGroup "Property Tests"
     [ testProperty "decode / encode word iso" decodeWordIso
     , testProperty "decode / encode word iso over attoparsec" decodeWordIso'
-    -- , testProperty "decode / encode sentence iso" encodeSentenceIso
+    , testProperty "decode / encode sentence iso" encodeSentenceIso
     ]
   ]
 

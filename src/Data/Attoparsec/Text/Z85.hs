@@ -11,7 +11,6 @@ import Data.ByteString.Builder (word32BE, toLazyByteString)
 import Data.Attoparsec.Text (Parser, char, satisfy, inClass, (<?>))
 import Control.Applicative (many, optional)
 import Control.Monad (replicateM)
-import Debug.Trace (traceShow)
 
 
 
@@ -38,7 +37,7 @@ z85Decoded = do
   case mX of
     Nothing -> pure empty
     Just x ->
-      let x' = traceShow x $ toStrict (toLazyByteString (word32BE x))
+      let x' = toStrict (toLazyByteString (word32BE x))
       in  (x' <>) <$> z85Decoded
 
   -- (toStrict . toLazyByteString . fold) <$> many (word32BE <$> anyZ85ChunkDecoded)

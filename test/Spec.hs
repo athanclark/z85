@@ -2,18 +2,23 @@
     OverloadedStrings
   #-}
 
-import Data.ByteString.Z85.Internal (encodeWord, decodeWord)
-import Data.Attoparsec.ByteString.Z85 (z85Encoded)
+import Data.ByteString.Z85.Internal (encodeWord, decodeWord, printZ85Chunk)
+import Data.Attoparsec.ByteString.Z85 (z85Encoded, anyWord32beEncoded)
+import Data.Attoparsec.Text.Z85 (z85Decoded, anyZ85ChunkDecoded)
 
 import Test.Tasty (testGroup, defaultMain)
 import Test.Tasty.QuickCheck (testProperty)
 import Test.Tasty.HUnit (testCase, (@=?))
 import Test.QuickCheck (Property, (===))
+import Test.QuickCheck.Instances ()
 
 import Data.Word (Word32)
+import Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
 import Data.ByteString.Lazy (toStrict)
-import Data.ByteString.Builder (word8, toLazyByteString)
+import Data.ByteString.Builder (word8, word32BE, toLazyByteString)
 import qualified Data.Attoparsec.ByteString as AB
+import qualified Data.Attoparsec.Text as AT
 
 
 
@@ -27,6 +32,8 @@ main = defaultMain $ testGroup "All Tests"
     ]
   , testGroup "Property Tests"
     [ testProperty "decode / encode word iso" decodeWordIso
+    , testProperty "decode / encode word iso over attoparsec" decodeWordIso'
+    -- , testProperty "decode / encode sentence iso" encodeSentenceIso
     ]
   ]
 
@@ -35,3 +42,20 @@ main = defaultMain $ testGroup "All Tests"
 
 decodeWordIso :: Word32 -> Property
 decodeWordIso w = w === decodeWord (encodeWord w)
+
+
+
+decodeWordIso' :: Word32 -> Property
+decodeWordIso' w =
+  let bs = toStrict (toLazyByteString (word32BE w))
+  in  fmap (AT.parseOnly anyZ85ChunkDecoded . printZ85Chunk) (AB.parseOnly anyWord32beEncoded bs) === Right (Right w)
+
+
+
+encodeSentenceIso :: ByteString -> Property
+encodeSentenceIso x' =
+  let xMod = BS.length x' `mod` 4
+      x = if xMod /= 0
+            then BS.drop xMod x'
+            else x'
+  in  fmap (AT.parseOnly z85Decoded) (AB.parseOnly z85Encoded x) === Right (Right x)

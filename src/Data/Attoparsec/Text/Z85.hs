@@ -5,12 +5,13 @@ import qualified Data.Vector.Sized as V
 import Data.Maybe (fromJust)
 import Data.Word (Word32)
 import Data.Foldable (fold)
-import Data.ByteString (ByteString)
+import Data.ByteString (ByteString, empty)
 import Data.ByteString.Lazy (toStrict)
 import Data.ByteString.Builder (word32BE, toLazyByteString)
 import Data.Attoparsec.Text (Parser, char, satisfy, inClass)
-import Control.Applicative (many)
+import Control.Applicative (many, optional)
 import Control.Monad (replicateM)
+import Debug.Trace (traceShow)
 
 
 
@@ -32,4 +33,12 @@ anyZ85ChunkDecoded = decodeWord <$> anyZ85Chunk
 
 
 z85Decoded :: Parser ByteString
-z85Decoded = (toStrict . toLazyByteString . fold) <$> many (word32BE <$> anyZ85ChunkDecoded)
+z85Decoded = do
+  mX <- optional anyZ85ChunkDecoded
+  case mX of
+    Nothing -> pure empty
+    Just x ->
+      let x' = traceShow x $ toStrict (toLazyByteString (word32BE x))
+      in  (x' <>) <$> z85Decoded
+
+  -- (toStrict . toLazyByteString . fold) <$> many (word32BE <$> anyZ85ChunkDecoded)

@@ -10,9 +10,9 @@ import Control.Applicative (many)
 
 
 
-anyWord32leEncoded :: Parser Z85Chunk
-anyWord32leEncoded = encodeWord <$> anyWord32be
+anyWord32beEncoded :: Parser Z85Chunk
+anyWord32beEncoded = encodeWord <$> anyWord32be
 
 
 z85Encoded :: Parser Text
-z85Encoded = fold <$> many (printZ85Chunk <$> anyWord32leEncoded)
+z85Encoded = fold <$> many (printZ85Chunk <$> anyWord32beEncoded)

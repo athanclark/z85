@@ -43,6 +43,7 @@ tests:
     dependencies:
     - z85-bytestring
     - QuickCheck
+    - quickcheck-instances
     - tasty
     - tasty-hunit
     - tasty-quickcheck

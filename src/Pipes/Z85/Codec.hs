@@ -4,18 +4,18 @@
 
 module Pipes.Z85.Codec where
 
-import Data.ByteString.Z85.Internal (Z85Chunk, encodeWord, decodeWord)
+-- import Data.ByteString.Z85.Internal (Z85Chunk, encodeWord, decodeWord)
 
-import Pipes (Pipe, await, yield)
-import Data.Word (Word32)
-import Data.Text (Text)
-import Data.ByteString (ByteString)
-import qualified Data.ByteString.Builder as BSB
-import qualified Data.ByteString.Lazy as LBS
-import Data.Vector (Vector)
-import qualified Data.Vector as V
-import qualified Data.Vector.Sized as Vs
-import Control.Monad.Base (MonadBase (liftBase))
+-- import Pipes (Pipe, await, yield)
+-- import Data.Word (Word32)
+-- import Data.Text (Text)
+-- import Data.ByteString (ByteString)
+-- import qualified Data.ByteString.Builder as BSB
+-- import qualified Data.ByteString.Lazy as LBS
+-- import Data.Vector (Vector)
+-- import qualified Data.Vector as V
+-- import qualified Data.Vector.Sized as Vs
+-- import Control.Monad.Base (MonadBase (liftBase))
 
 
 

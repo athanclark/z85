@@ -1,5 +1,6 @@
 {-# LANGUAGE
     DataKinds
+  , DeriveGeneric
   #-}
 
 module Data.ByteString.Z85.Internal where
@@ -7,6 +8,7 @@ module Data.ByteString.Z85.Internal where
 import Data.Vector.Sized (Vector)
 import qualified Data.Vector.Sized as V
 import Data.Char (ord)
+import Data.Text (Text, pack)
 import Data.Maybe (fromJust)
 import Data.Bits ((.&.), shiftR)
 import Data.Word (Word32)
@@ -14,6 +16,9 @@ import Data.STRef (newSTRef, modifySTRef, readSTRef)
 import Data.Traversable (traverse)
 import Control.Monad (forM_)
 import Control.Monad.ST (runST)
+import Test.QuickCheck (Arbitrary (..))
+import Test.QuickCheck.Gen (oneof)
+import GHC.Generics (Generic)
 
 
 
@@ -25,18 +30,18 @@ newtype Z85Char = Z85Char
   } deriving (Eq, Ord, Show, Generic)
 
 instance Arbitrary Z85Char where
-  arbitrary = oneof (V.toList z85Chars)
+  arbitrary = oneof $ map pure $ V.toList z85Chars
 
 
 type Z85Chunk = Vector 5 Z85Char
 
 
 printZ85Chunk :: Z85Chunk -> Text
-printZ85Chunk = T.pack . map getZ85Char . V.toList
+printZ85Chunk = pack . map getZ85Char . V.toList
 
 
 
-z85Chars :: Vector 85 Char
+z85Chars :: Vector 85 Z85Char
 z85Chars = Z85Char <$> fromJust (V.fromList "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#")
 
 
@@ -64,7 +69,7 @@ charCodeToBase85 = fromJust (V.fromList
 
 
 z85CharToIndex :: Z85Char -> Int
-z85CharToIndex c = ord c - 32
+z85CharToIndex (Z85Char c) = ord c - 32
 
 
 lookupBase85 :: Z85Char -> Base85

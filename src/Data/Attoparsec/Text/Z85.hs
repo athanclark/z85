@@ -4,13 +4,18 @@ import Data.ByteString.Z85.Internal (Z85Char (..), Z85Chunk, z85Chars, decodeWor
 import qualified Data.Vector.Sized as V
 import Data.Maybe (fromJust)
 import Data.Word (Word32)
+import Data.Foldable (fold)
+import Data.ByteString (ByteString)
+import Data.ByteString.Lazy (toStrict)
+import Data.ByteString.Builder (word32LE, toLazyByteString)
 import Data.Attoparsec.Text (Parser, char, satisfy, inClass)
+import Control.Applicative (many)
 import Control.Monad (replicateM)
 
 
 
 anyZ85Char :: Parser Z85Char
-anyZ85Char = Z85Char <$> satisfy (inClass (getZ85Char <$> z85Chars))
+anyZ85Char = Z85Char <$> satisfy (inClass (getZ85Char <$> V.toList z85Chars))
 
 
 z85Char :: Z85Char -> Parser Z85Char
@@ -27,4 +32,4 @@ anyZ85ChunkDecoded = decodeWord <$> anyZ85Chunk
 
 
 z85Decoded :: Parser ByteString
-z85Decoded = (runBuilder . fold) <$> many (BSB.word32le <$> anyZ85ChunkDecoded)
+z85Decoded = (toStrict . toLazyByteString . fold) <$> many (word32LE <$> anyZ85ChunkDecoded)

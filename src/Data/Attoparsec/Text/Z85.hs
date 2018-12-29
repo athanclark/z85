@@ -39,5 +39,3 @@ z85Decoded = do
     Just x ->
       let x' = toStrict (toLazyByteString (word32BE x))
       in  (x' <>) <$> z85Decoded
-
-  -- (toStrict . toLazyByteString . fold) <$> many (word32BE <$> anyZ85ChunkDecoded)

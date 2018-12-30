@@ -2,10 +2,10 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4d4d6d2b2cbb587699ef5489e6cbee4faee2aea664e30c317b7f8d70bc3e84b4
+-- hash: b5fc57b2b27be024e8cede33dee62393524e6264ea8bd9c7c5320278ce804579
 
 name:           z85
-version:        0.0.0
+version:        0.0.1
 synopsis:       Implementation of the z85 binary codec
 description:    Please see the README on GitHub at <https://github.com/athanclark/z85#readme>
 category:       Data

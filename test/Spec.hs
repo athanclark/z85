@@ -2,6 +2,7 @@
     OverloadedStrings
   #-}
 
+import qualified Data.ByteString.Z85 as Z85
 import Data.ByteString.Z85.Internal (encodeWord, decodeWord, printZ85Chunk)
 import Data.Attoparsec.ByteString.Z85 (z85Encoded, anyWord32beEncoded)
 import Data.Attoparsec.Text.Z85 (z85Decoded, anyZ85ChunkDecoded)
@@ -16,6 +17,7 @@ import Data.Word (Word32)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy (toStrict)
+import qualified Data.ByteString.Lazy as LBS
 import Data.ByteString.Builder (word8, word32BE, toLazyByteString)
 import qualified Data.Attoparsec.ByteString as AB
 import qualified Data.Attoparsec.Text as AT
@@ -33,7 +35,7 @@ main = defaultMain $ testGroup "All Tests"
   , testGroup "Property Tests"
     [ testProperty "decode / encode word iso" decodeWordIso
     , testProperty "decode / encode word iso over attoparsec" decodeWordIso'
-    , testProperty "decode / encode sentence iso" encodeSentenceIso
+    , testProperty "decode / encode sentence iso over attoparsec" encodeSentenceIsoA
     ]
   ]
 
@@ -52,10 +54,19 @@ decodeWordIso' w =
 
 
 
-encodeSentenceIso :: ByteString -> Property
-encodeSentenceIso x' =
+encodeSentenceIsoA :: ByteString -> Property
+encodeSentenceIsoA x' =
   let xMod = BS.length x' `mod` 4
       x = if xMod /= 0
             then BS.drop xMod x'
             else x'
   in  fmap (AT.parseOnly z85Decoded) (AB.parseOnly z85Encoded x) === Right (Right x)
+
+
+encodeSentenceIso :: LBS.ByteString -> Property
+encodeSentenceIso x' =
+  let xMod = LBS.length x' `mod` 4
+      x = if xMod /= 0
+            then LBS.drop xMod x'
+            else x'
+  in  fmap Z85.decode (Z85.encode x) === Right (Right x)

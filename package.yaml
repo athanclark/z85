@@ -1,6 +1,6 @@
-name:                z85-bytestring
+name:                z85
 version:             0.0.0
-github:              "athanclark/z85-bytestring"
+github:              "athanclark/z85"
 license:             BSD3
 author:              "Athan Clark"
 maintainer:          "athan.clark@localcooking.com"
@@ -11,8 +11,8 @@ extra-source-files:
 - ChangeLog.md
 
 # Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
+synopsis:            Implementation of the z85 binary codec
+category:            Binary
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
@@ -24,10 +24,9 @@ dependencies:
 - attoparsec
 - attoparsec-binary
 - bytestring
-- mtl
 - pipes
-# - pipes-parse
-# - pipes-attoparsec
+- pipes-bytestring
+- pipes-text
 - QuickCheck
 - text
 - vector-sized

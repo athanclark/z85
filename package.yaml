@@ -1,5 +1,5 @@
 name:                z85
-version:             0.0.1
+version:             0.0.2
 github:              "athanclark/z85"
 license:             BSD3
 author:              "Athan Clark"
@@ -20,13 +20,13 @@ category:            Data
 description:         Please see the README on GitHub at <https://github.com/athanclark/z85#readme>
 
 dependencies:
-- base >= 4.7 && < 5
+- base >= 4.8 && < 4.12
 - attoparsec
-- attoparsec-binary
+- attoparsec-binary >= 0.2
 - bytestring
-- pipes
-- pipes-bytestring
-- pipes-text
+- pipes >= 4.0 && < 4.4
+- pipes-bytestring >= 2.1.6
+- pipes-text >= 0.0.2.5
 - QuickCheck
 - text
 - vector-sized

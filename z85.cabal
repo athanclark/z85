@@ -2,10 +2,10 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b5fc57b2b27be024e8cede33dee62393524e6264ea8bd9c7c5320278ce804579
+-- hash: 22a73edc32f541f81500812a5fba713c8b14096c1a89b428be2eda71495d1063
 
 name:           z85
-version:        0.0.1
+version:        0.0.2
 synopsis:       Implementation of the z85 binary codec
 description:    Please see the README on GitHub at <https://github.com/athanclark/z85#readme>
 category:       Data
@@ -41,12 +41,12 @@ library
   build-depends:
       QuickCheck
     , attoparsec
-    , attoparsec-binary
-    , base >=4.7 && <5
+    , attoparsec-binary >=0.2
+    , base >=4.8 && <4.12
     , bytestring
-    , pipes
-    , pipes-bytestring
-    , pipes-text
+    , pipes >=4.0 && <4.4
+    , pipes-bytestring >=2.1.6
+    , pipes-text >=0.0.2.5
     , text
     , vector-sized
   default-language: Haskell2010
@@ -62,12 +62,12 @@ test-suite z85-bytestring-test
   build-depends:
       QuickCheck
     , attoparsec
-    , attoparsec-binary
-    , base >=4.7 && <5
+    , attoparsec-binary >=0.2
+    , base >=4.8 && <4.12
     , bytestring
-    , pipes
-    , pipes-bytestring
-    , pipes-text
+    , pipes >=4.0 && <4.4
+    , pipes-bytestring >=2.1.6
+    , pipes-text >=0.0.2.5
     , quickcheck-instances
     , tasty
     , tasty-hunit

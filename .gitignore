@@ -1,3 +1,6 @@
 .stack-work/
 z85-bytestring.cabal
 *~
+cabal.sandbox.config
+.cabal-sandbox/
+dist/

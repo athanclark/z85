@@ -24,9 +24,12 @@ dependencies:
 - attoparsec
 - attoparsec-binary
 - bytestring
+- mtl
 - pipes
-- text
+# - pipes-parse
+# - pipes-attoparsec
 - QuickCheck
+- text
 - vector-sized
 
 library:

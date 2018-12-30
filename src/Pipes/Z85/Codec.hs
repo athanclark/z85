@@ -4,18 +4,38 @@
 
 module Pipes.Z85.Codec where
 
--- import Data.ByteString.Z85.Internal (Z85Chunk, encodeWord, decodeWord)
+import Data.Attoparsec.ByteString.Z85 (z85Encoded)
+import Data.Attoparsec.Text.Z85 (z85Decoded)
 
--- import Pipes (Pipe, await, yield)
--- import Data.Word (Word32)
--- import Data.Text (Text)
--- import Data.ByteString (ByteString)
--- import qualified Data.ByteString.Builder as BSB
--- import qualified Data.ByteString.Lazy as LBS
+import Pipes (Pipe, Producer, await, yield)
+import Data.ByteString (ByteString)
+import Data.Text (Text)
+import qualified Data.Attoparsec.ByteString as AB
+import qualified Data.Attoparsec.Text as AT
 -- import Data.Vector (Vector)
 -- import qualified Data.Vector as V
 -- import qualified Data.Vector.Sized as Vs
--- import Control.Monad.Base (MonadBase (liftBase))
+import Data.IORef (IORef, readIORef, writeIORef)
+import Control.Monad.State (StateT)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Exception (throwIO)
+import System.IO.Error (userError)
+
+
+
+
+-- encode :: Pipe ByteString Text m ()
+-- encode =
+
+
+
+-- encode' :: Monad m => Parser ByteString m (Maybe (Either ParsingError Text))
+-- encode' = parse z85Encoded
+
+
+-- decode' :: Monad m => Parser Text m (Maybe (Either ParsingError ByteString))
+-- decode' = parse z85Decoded
+
 
 
 
@@ -30,24 +50,29 @@ module Pipes.Z85.Codec where
 
 -- encode :: MonadBase ST m => STRef ByteString -> Pipe ByteString Text m ()
 -- encode leftoverRef =
---   prev <- liftBase (readSTRef leftoverRef)
+--   prev <- liftIO (readSTRef leftoverRef)
 --   cs <- await
 --   let (cs',leftover) =
   
 
--- decode :: MonadBase ST m => STRef Text -> Pipe Text ByteString m ()
--- decode leftoverRef =
---   prev <- liftBase (readSTRef leftoverRef)
---   cs <- await
---   let (cs',leftover) =
---         let go :: Text -> (Vector Word32, Text)
---             go x
---               | T.length x < 5 = ([], x)
---               | otherwise =
---                 let (pre,suf) = T.splitAt 5 x
---                     (cs'',l) = go suf
---                 in  ((decodeWord $ Vs.fromList $ T.unpack pre) `V.cons` cs'',l)
---         in  go (prev <> cs)
---   liftBase (writeSTRef leftoverRef leftover)
---   yield $ LBS.toStrict $ BSB.toLazyByteString $ V.foldMap BSB.word32LE cs'
--- harry potter
+
+decode :: MonadIO m
+       => IORef (Either Text (Text -> AT.Result ByteString)) -- ^ Either unparsed input, or overparsed input
+       -> Pipe Text ByteString m ()
+decode leftoverRef = do
+  mPrev <- liftIO (readIORef leftoverRef)
+  r <-  let f = case mPrev of
+              Right prevF -> prevF
+              Left prevT -> \current -> AT.parse z85Decoded (prevT <> current)
+        in  f <$> await
+  case r of
+    e@(AT.Fail i _ _) -> liftIO $ do
+      writeIORef leftoverRef (Left i)
+      throwIO $ userError $ show e
+    AT.Partial f -> do
+      liftIO (writeIORef leftoverRef (Right f))
+      decode leftoverRef
+    AT.Done i x -> do
+      liftIO (writeIORef leftoverRef (Left i))
+      yield x
+      decode leftoverRef

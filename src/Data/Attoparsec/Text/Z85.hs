@@ -1,15 +1,14 @@
 module Data.Attoparsec.Text.Z85 where
 
-import Data.ByteString.Z85.Internal (Z85Char (..), Z85Chunk, z85Chars, decodeWord, isZ85Char)
+import Data.ByteString.Z85.Internal (Z85Char (..), Z85Chunk, decodeWord, isZ85Char)
 import qualified Data.Vector.Sized as V
 import Data.Maybe (fromJust)
 import Data.Word (Word32)
-import Data.Foldable (fold)
 import Data.ByteString (ByteString, empty)
 import Data.ByteString.Lazy (toStrict)
 import Data.ByteString.Builder (word32BE, toLazyByteString)
-import Data.Attoparsec.Text (Parser, char, satisfy, inClass, (<?>))
-import Control.Applicative (many, optional)
+import Data.Attoparsec.Text (Parser, char, satisfy, (<?>))
+import Control.Applicative (optional)
 import Control.Monad (replicateM)
 
 

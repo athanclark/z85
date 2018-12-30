@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f002cfe07bdf9f1f7f50de09258ef67e08bf530fc9ee8005822195e44fddf5b1
+-- hash: b205fe8b63b84ee61504ea7caa31bdfbbb4c47f00ead46562628e1126bc31e5e
 
 name:           z85
 version:        0.0.0
@@ -74,5 +74,5 @@ test-suite z85-bytestring-test
     , tasty-quickcheck
     , text
     , vector-sized
-    , z85-bytestring
+    , z85
   default-language: Haskell2010

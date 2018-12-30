@@ -43,7 +43,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - z85-bytestring
+    - z85
     - QuickCheck
     - quickcheck-instances
     - tasty

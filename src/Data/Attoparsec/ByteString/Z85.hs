@@ -1,10 +1,9 @@
 module Data.Attoparsec.ByteString.Z85 where
 
-import Data.ByteString.Z85.Internal (Z85Char (..), Z85Chunk, z85Chars, encodeWord, printZ85Chunk)
+import Data.ByteString.Z85.Internal (Z85Chunk, encodeWord, printZ85Chunk)
 import Data.Attoparsec.ByteString (Parser)
 import Data.Attoparsec.Binary (anyWord32be)
 import Data.Text (Text)
-import Data.Word (Word32)
 import Data.Foldable (fold)
 import Control.Applicative (many)
 

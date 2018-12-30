@@ -35,16 +35,12 @@ encode :: ByteString -> Either Z85Error Text
 encode bs
   | LBS.length bs `mod` 4 /= 0 = Left BSNotMod4
   | otherwise = unsafePerformIO $ do
-    let go = do
-          leftoverRef <- newIORef (Left "")
-          resultRef <- newIORef ""
-          let onResult :: T.Text -> Effect IO ()
-              onResult x =
-                liftIO (modifyIORef resultRef (<> LT.fromStrict x))
-              encoded :: Producer T.Text IO ()
+    let go :: IO Text
+        go = do
+          leftoverRef <- newIORef ""
+          let encoded :: Producer T.Text IO ()
               encoded = PB.fromLazy bs >-> PZ.encode leftoverRef
-          runEffect (for encoded onResult)
-          readIORef resultRef
+          PT.toLazyM encoded
     eX <- try go
     pure $ case eX of
       Left e -> Left (ParsingError e)
@@ -54,20 +50,17 @@ encode bs
 -- use 'encode' if you want to check length early.
 encode' :: ByteString -> Either Z85Error Text
 encode' bs = unsafePerformIO $ do
-  let go = do
-        leftoverRef <- newIORef (Left "")
-        resultRef <- newIORef ""
-        let onResult :: T.Text -> Effect IO ()
-            onResult x =
-              liftIO (modifyIORef resultRef (<> LT.fromStrict x))
-            encoded :: Producer T.Text IO ()
+  let go :: IO (Either Z85Error Text)
+      go = do
+        leftoverRef <- newIORef ""
+        let encoded :: Producer T.Text IO ()
             encoded = PB.fromLazy bs >-> PZ.encode leftoverRef
-        runEffect (for encoded onResult)
+        x <- PT.toLazyM encoded
         leftover <- readIORef leftoverRef
-        case leftover of
-          Left bs'
-            | BS.length bs' /= 0 -> pure (Left BSNotMod4)
-            | otherwise -> Right <$> readIORef resultRef
+        pure $
+          if BS.length leftover /= 0
+          then Left BSNotMod4
+          else Right x
   eX <- try go
   pure $ case eX of
     Left e -> Left (ParsingError e)
@@ -81,16 +74,12 @@ decode :: Text -> Either Z85Error ByteString
 decode t
   | LT.length t `mod` 5 /= 0 = Left TextNotMod5
   | otherwise = unsafePerformIO $ do
-    let go = do
-          leftoverRef <- newIORef (Left "")
-          resultRef <- newIORef ""
-          let onResult :: BS.ByteString -> Effect IO ()
-              onResult x =
-                liftIO (modifyIORef resultRef (<> LBS.fromStrict x))
-              decoded :: Producer BS.ByteString IO ()
+    let go :: IO ByteString
+        go = do
+          leftoverRef <- newIORef ""
+          let decoded :: Producer BS.ByteString IO ()
               decoded = PT.fromLazy t >-> PZ.decode leftoverRef
-          runEffect (for decoded onResult)
-          readIORef resultRef
+          PB.toLazyM decoded
     eX <- try go
     pure $ case eX of
       Left e -> Left (ParsingError e)
@@ -100,20 +89,17 @@ decode t
 -- use 'decode' if you want to check length early.
 decode' :: Text -> Either Z85Error ByteString
 decode' t = unsafePerformIO $ do
-  let go = do
-        leftoverRef <- newIORef (Left "")
-        resultRef <- newIORef ""
-        let onResult :: BS.ByteString -> Effect IO ()
-            onResult x =
-              liftIO (modifyIORef resultRef (<> LBS.fromStrict x))
-            decoded :: Producer BS.ByteString IO ()
+  let go :: IO (Either Z85Error ByteString)
+      go = do
+        leftoverRef <- newIORef ""
+        let decoded :: Producer BS.ByteString IO ()
             decoded = PT.fromLazy t >-> PZ.decode leftoverRef
-        runEffect (for decoded onResult)
+        x <- PB.toLazyM decoded
         leftover <- readIORef leftoverRef
-        case leftover of
-          Left t'
-            | T.length t' /= 0 -> pure (Left TextNotMod5)
-            | otherwise -> Right <$> readIORef resultRef
+        pure $
+          if T.length leftover /= 0
+          then Left TextNotMod5
+          else Right x
   eX <- try go
   pure $ case eX of
     Left e -> Left (ParsingError e)

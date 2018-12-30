@@ -36,6 +36,8 @@ main = defaultMain $ testGroup "All Tests"
     [ testProperty "decode / encode word iso" decodeWordIso
     , testProperty "decode / encode word iso over attoparsec" decodeWordIso'
     , testProperty "decode / encode sentence iso over attoparsec" encodeSentenceIsoA
+    , testProperty "decode / encode sentence iso" encodeSentenceIso
+    , testProperty "decode / encode sentence iso, residual failure" encodeSentenceIso'
     ]
   ]
 
@@ -70,3 +72,12 @@ encodeSentenceIso x' =
             then LBS.drop xMod x'
             else x'
   in  fmap Z85.decode (Z85.encode x) === Right (Right x)
+
+
+encodeSentenceIso' :: LBS.ByteString -> Property
+encodeSentenceIso' x' =
+  let xMod = LBS.length x' `mod` 4
+      x = if xMod /= 0
+            then LBS.drop xMod x'
+            else x'
+  in  fmap Z85.decode' (Z85.encode' x) === Right (Right x)

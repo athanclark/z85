@@ -51,7 +51,7 @@ isZ85Char c = isAlphaNum c || c `elem` ".-:+=^!/*?&<>()[]{}@%$#"
 
 
 lookupZ85Char :: Base85 -> Z85Char
-lookupZ85Char idx = z85Chars `V.unsafeIndex` (fromIntegral idx)
+lookupZ85Char idx = z85Chars `V.unsafeIndex` fromIntegral idx
 
 
 charCodeToBase85 :: Vector 96 Base85
